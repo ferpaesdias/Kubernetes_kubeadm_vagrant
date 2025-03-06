@@ -1,0 +1,22 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+vms = {
+  'k8s-control-plane' => { 'memory' => '2048', 'cpus' => '2', 'ip' => '201', 'box' => 'debian/bookworm64', 'provision' => 'exec-control-plane.sh' }
+}
+
+Vagrant.configure('2') do |config|
+    vms.each do |name, conf|
+      config.vm.define "#{name}" do |my|
+        my.vm.box = conf['box']
+        my.vm.hostname = "#{name}.myhome.local"
+        my.vm.network 'public_network', bridge: "enp8s0", ip: "192.168.3.#{conf['ip']}"
+        my.vm.provision 'shell', path: "Provision/#{conf['provision']}"
+        my.vm.provider 'virtualbox' do |vb|
+          vb.memory = conf['memory']
+          vb.cpus = conf['cpus']
+        end
+      end  
+  end
+end
+
