@@ -2,7 +2,6 @@
 
 source /vagrant/Provision/users-appsbasicos.sh
 source /vagrant/Provision/install-k8s.sh
-source /vagrant/Provision/installCNI.sh
      
 echo -e "Configurando usuarios\n"
 addUser 

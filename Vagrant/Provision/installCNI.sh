@@ -11,4 +11,3 @@ function installCNICilium {
     kubectl get nodes
 
 }
-installCNICilium

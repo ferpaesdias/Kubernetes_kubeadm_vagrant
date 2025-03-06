@@ -34,7 +34,7 @@ function installk8s {
     sudo apt-mark hold kubelet kubeadm kubectl
 
     # Adiciona alias no bash do usuario vagrant
-    echo 'alias k="kubectl"' >> /home/vagrant/.bashrc
+    echo 'alias k="kubectl"' >> $HOME/.bashrc
 }
 
 function installContainerd {
@@ -61,13 +61,13 @@ function installContainerd {
 }
 
 function startCluster {
-    sudo kubeadm init --pod-network-cidr=10.10.0.0/16 --apiserver-advertise-address=192.168.3.201
+    kubeadm init --pod-network-cidr=10.10.0.0/16 --apiserver-advertise-address=192.168.3.201
 
     echo -e "Configuracoes do kubeadm enviadas para o usuario vagrant\n"
 
-    mkdir -p /home/vagrant/.kube
-    sudo cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
-    sudo chown vagrant:vagrant /home/vagrant/.kube/config
+    mkdir -p $HOME/.kube 
+    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
     kubeadm token create --print-join-command > /vagrant/Provision/token/kubeadm_node_token
 
@@ -76,4 +76,14 @@ function startCluster {
 function addNode {
     kubeadmtoken=$(cat /vagrant/Provision/token/kubeadm_node_token)
     sudo $kubeadmtoken
+}
+
+function installCNICilium {
+    sudo curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    sudo chmod 700 get_helm.sh
+    sudo ./get_helm.sh
+
+    helm repo add cilium https://helm.cilium.io/
+    helm install cilium cilium/cilium --version 1.17.1 --namespace kube-system
+
 }
