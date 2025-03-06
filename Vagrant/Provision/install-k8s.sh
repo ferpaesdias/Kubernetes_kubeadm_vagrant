@@ -69,11 +69,11 @@ function startCluster {
     sudo cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
     sudo chown vagrant:vagrant /home/vagrant/.kube/config
 
-    kubeadm token create --print-join-command > /vagrant/Provision/kubeadm_node_token/kubeadm_node_token
+    kubeadm token create --print-join-command > /vagrant/Provision/token/kubeadm_node_token
 
 }
 
 function addNode {
-    kubeadmtoken=$(cat /vagrant/Provision/kubeadm_node_token/kubeadm_node_token)
+    kubeadmtoken=$(cat /vagrant/Provision/token/kubeadm_node_token)
     sudo $kubeadmtoken
 }
