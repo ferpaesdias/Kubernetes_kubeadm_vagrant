@@ -2,7 +2,8 @@
 # vi: set ft=ruby :
 
 vms = {
-  'k8s-control-plane' => { 'memory' => '2048', 'cpus' => '2', 'ip' => '201', 'box' => 'debian/bookworm64', 'provision' => 'exec-control-plane.sh' }
+  'k8s-control-plane' => { 'memory' => '2048', 'cpus' => '2', 'ip' => '201', 'box' => 'debian/bookworm64', 'provision' => 'exec-control-plane.sh' },
+  'k8s-node01' => { 'memory' => '1024', 'cpus' => '1', 'ip' => '202', 'box' => 'debian/bookworm64', 'provision' => 'exec-node.sh' }
 }
 
 Vagrant.configure('2') do |config|

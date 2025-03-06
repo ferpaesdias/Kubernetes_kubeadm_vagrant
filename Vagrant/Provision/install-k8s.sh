@@ -21,15 +21,15 @@ function loadModules {
     sudo echo "net.ipv4.ip_forward                 = 1" >> /etc/sysctl.d/k8s.conf
     sudo chmod 644 /etc/sysctl.d/k8s.conf
 
-    sudo sysctl --system
+    sudo sysctl --system 
 } 
 
 function installk8s {
-    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-    echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
-    sudo apt-get update
+    sudo apt-get update > /dev/null 2>&1
     sudo apt-get install -y kubelet kubeadm kubectl
     sudo apt-mark hold kubelet kubeadm kubectl
 }
@@ -45,7 +45,7 @@ function installContainerd {
         $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
         sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-    sudo apt-get update && sudo apt-get install -y containerd.io
+    sudo apt-get update > /dev/null 2>&1 && sudo apt-get install -y containerd.io
 
     # Configurar o containerd, alterar a opção SystemdCgroup para true
     sudo containerd config default | sudo tee /etc/containerd/config.toml
@@ -65,4 +65,11 @@ function startCluster {
     mkdir -p /home/vagrant/.kube
     sudo cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
     sudo chown vagrant:vagrant /home/vagrant/.kube/config
+
+    kubeadm token create --print-join-command > /vagrant/Provision/kubeadm_node_token
+}
+
+function addNode {
+    kubeadmtoken=$(cat /vagrant/Provision/kubeadm_node_token)
+    sudo $kubeadmtoken
 }
