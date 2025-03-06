@@ -4,10 +4,10 @@ source /vagrant/Provision/users-appsbasicos.sh
 source /vagrant/Provision/install-k8s.sh
      
 echo -e "Configurando usuarios\n"
-addUser > /dev/null 2>&1
+addUser 
 
 echo -e "Instalando aplicativos iniciais\n"
-installApp > /dev/null 2>&1
+installApp 
 
 echo -e "Carregando Modulos\n"
 loadModules
