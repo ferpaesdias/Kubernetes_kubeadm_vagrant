@@ -13,4 +13,4 @@
 
 # End of https://www.toptal.com/developers/gitignore/api/vagrant
 
-.kubeadm_node_token/*
+Vagrant/Provision/kubeadm_node_token/kubeadm_node_token
