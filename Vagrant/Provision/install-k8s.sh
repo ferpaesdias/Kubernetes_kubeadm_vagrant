@@ -32,6 +32,9 @@ function installk8s {
     sudo apt-get update > /dev/null 2>&1
     sudo apt-get install -y kubelet kubeadm kubectl
     sudo apt-mark hold kubelet kubeadm kubectl
+
+    # Adiciona alias no bash do usuario vagrant
+    echo 'alias k="kubectl"' >> /home/vagrant/.bashrc
 }
 
 function installContainerd {
@@ -67,9 +70,39 @@ function startCluster {
     sudo chown vagrant:vagrant /home/vagrant/.kube/config
 
     kubeadm token create --print-join-command > /vagrant/Provision/kubeadm_node_token
+
+    echo -e "comando kubectl\n"
+    
+    a=0
+    while [ $a -eq 0 ]
+    do
+        kubectl get nodes > /dev/null 2>&1
+
+        if [ $? -eq 0 ]
+        then
+            echo -e "comando executado com sucesso\n"
+            a=5
+        else
+            echo -e "comando executado com erro\n"
+        fi
+    done  
+
+    kubectl get nodes -o wide
 }
 
 function addNode {
     kubeadmtoken=$(cat /vagrant/Provision/kubeadm_node_token)
     sudo $kubeadmtoken
+}
+
+function installCNICilium {
+    # sudo curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    # sudo chmod 700 get_helm.sh
+    # sudo ./get_helm.sh
+
+    # helm repo add cilium https://helm.cilium.io/
+    # helm install cilium cilium/cilium --version 1.17.1 --namespace kube-system
+
+    echo -e "\nInstalando o CNI Cilium 2\n"
+
 }
