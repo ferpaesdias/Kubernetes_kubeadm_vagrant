@@ -67,7 +67,9 @@ function startCluster {
 
     mkdir -p $HOME/.kube 
     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    sudo cp -i /etc/kubernetes/admin.conf /vagrant/Provision/token/kube_config
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
+    
 
     kubeadm token create --print-join-command > /vagrant/Provision/token/kubeadm_node_token
 
@@ -79,9 +81,9 @@ function addNode {
 }
 
 function installCNICilium {
-    sudo curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-    sudo chmod 700 get_helm.sh
-    sudo ./get_helm.sh
+    sudo curl -fsSL -o /vagrant/Provision/token/get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    sudo chmod 700 /vagrant/Provision/token/get_helm.sh
+    sudo bash /vagrant/Provision/token/get_helm.sh
 
     helm repo add cilium https://helm.cilium.io/
     helm install cilium cilium/cilium --version 1.17.1 --namespace kube-system
