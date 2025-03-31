@@ -12,5 +12,3 @@
 *.box
 
 # End of https://www.toptal.com/developers/gitignore/api/vagrant
-
-Vagrant/Provision/token/
