@@ -1,25 +1,25 @@
 #!/bin/env bash
 
-# Desabilita Swap
+# Instala módulos
 function loadModules {
 
     echo -e "Carregar módulos do Kernel\n" 
 
-    sudo touch /etc/modules-load.d/k8s.conf
-    sudo chmod 666 /etc/modules-load.d/k8s.conf
-    sudo echo overlay >> /etc/modules-load.d/k8s.conf
-    sudo echo br_netfilter >> /etc/modules-load.d/k8s.conf
-    sudo chmod 644 /etc/modules-load.d/k8s.conf
+# Configuração dos módulos do Node
+cat <<-EOF | sudo tee /etc/modules-load.d/k8s.conf
+overlay
+br_netfilter
+EOF
 
     sudo modprobe overlay
     sudo modprobe br_netfilter
 
-    sudo touch /etc/sysctl.d/k8s.conf
-    sudo chmod 666 /etc/sysctl.d/k8s.conf
-    sudo echo "net.bridge.bridge-nf-call-iptables  = 1" >> /etc/sysctl.d/k8s.conf
-    sudo echo "net.bridge.bridge-nf-call-ip6tables = 1" >> /etc/sysctl.d/k8s.conf
-    sudo echo "net.ipv4.ip_forward                 = 1" >> /etc/sysctl.d/k8s.conf
-    sudo chmod 644 /etc/sysctl.d/k8s.conf
+# Configurar parâmetros do sistema
+cat <<-EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
+EOF
 
     sudo sysctl --system 
 } 
@@ -33,8 +33,9 @@ function installk8s {
     sudo apt-get install -y kubelet kubeadm kubectl
     sudo apt-mark hold kubelet kubeadm kubectl
 
-    # Adiciona alias no bash do usuario vagrant
-    echo 'alias k="kubectl"' >> $HOME/.bashrc
+    # Adiciona alias e autocomplete do kubectl em todos os usuários
+    sudo echo 'source <(kubectl completion bash)' >> /etc/bash.bashrc
+    echo 'alias k="kubectl"' >> /etc/bash.bashrc
 }
 
 function installContainerd {
@@ -61,22 +62,22 @@ function installContainerd {
 }
 
 function startCluster {
-    kubeadm init --pod-network-cidr=10.10.0.0/16 --apiserver-advertise-address=192.168.3.201
+
+    echo -e "Executando o comando 'kubectl init'"
+    kubeadm init --pod-network-cidr=172.16.0.0/16 --apiserver-advertise-address=192.168.3.201
 
     echo -e "Configuracoes do kubeadm enviadas para o usuario vagrant\n"
-
-    mkdir -p $HOME/.kube 
-    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-    sudo cp -i /etc/kubernetes/admin.conf /vagrant/Provision/token/kube_config
-    sudo chown $(id -u):$(id -g) $HOME/.kube/config
+    mkdir -p /home/vagrant/.kube 
+    sudo cp /etc/kubernetes/admin.conf /home/vagrant/.kube/config
+    sudo cp /etc/kubernetes/admin.conf /vagrant/token/kube_config
+    sudo chown vagrant:vagrant /home/vagrant/.kube/config
     
-
-    kubeadm token create --print-join-command > /vagrant/Provision/token/kubeadm_node_token
-
+    # Arquivo que contém o comando que vincula os Workers ao Control Plane
+    kubeadm token create --print-join-command > /vagrant/token/kubeadm_node_token
 }
 
-function addNode {
-    kubeadmtoken=$(cat /vagrant/Provision/token/kubeadm_node_token)
+function addWorker {
+    kubeadmtoken=$(cat /vagrant/token/kubeadm_node_token)
     sudo $kubeadmtoken
 }
 
