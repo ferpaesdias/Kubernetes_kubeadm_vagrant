@@ -4,7 +4,7 @@ source /vagrant/Provision/users-appsbasicos.sh
 source /vagrant/Provision/install-k8s.sh
      
 echo -e "Configurando usuarios\n"
-addUser 
+add_User 
 
 echo -e "Instalando aplicativos iniciais\n"
 installApp
