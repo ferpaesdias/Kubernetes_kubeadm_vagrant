@@ -12,3 +12,6 @@
 *.box
 
 # End of https://www.toptal.com/developers/gitignore/api/vagrant
+
+# Arquivos de configuração do Kubernetes
+.token/*
