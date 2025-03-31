@@ -63,7 +63,7 @@ function installContainerd {
 
 function startCluster {
 
-    echo -e "Executando o comando 'kubectl init'"
+    echo -e "Executando o comando 'kubeadm init'"
     kubeadm init --pod-network-cidr=172.16.0.0/16 --apiserver-advertise-address=192.168.3.201
 
     echo -e "Configuracoes do kubeadm enviadas para o usuario vagrant\n"
