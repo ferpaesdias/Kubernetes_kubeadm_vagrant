@@ -71,6 +71,7 @@ function startCluster {
     sudo cp /etc/kubernetes/admin.conf /home/vagrant/.kube/config
     sudo cp /etc/kubernetes/admin.conf /vagrant/token/kube_config
     sudo chown vagrant:vagrant /home/vagrant/.kube/config
+    export KUBECONFIG=/vagrant/token/kube_config
     
     # Arquivo que contém o comando que vincula os Workers ao Control Plane
     kubeadm token create --print-join-command > /vagrant/token/kubeadm_node_token
@@ -82,11 +83,10 @@ function addWorker {
 }
 
 function installCNICilium {
-    sudo curl -fsSL -o /vagrant/Provision/token/get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-    sudo chmod 700 /vagrant/Provision/token/get_helm.sh
-    sudo bash /vagrant/Provision/token/get_helm.sh
+    sudo curl -fsSL -o /tmp/get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    sudo chmod 700 /tmp/get_helm.sh
+    sudo bash /tmp/get_helm.sh
 
-    helm repo add cilium https://helm.cilium.io/
-    helm install cilium cilium/cilium --version 1.17.1 --namespace kube-system
-
+    su -c "helm repo add cilium https://helm.cilium.io/" -s /bin/bash vagrant 
+    su -c "helm install cilium cilium/cilium --version 1.17.2 --namespace kube-system" -s /bin/bash vagrant
 }
