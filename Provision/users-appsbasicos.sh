@@ -22,6 +22,6 @@ EOF
 # Instalar aplicativos iniciais
 function installApp {
 
-    sudo apt update > /dev/null 2>&1 && sudo apt upgrade -y > /dev/null 2>&1
-    sudo apt install -y vim curl wget apt-transport-https ca-certificates curl gpg gnupg lsb-release git > /dev/null 2>&1
+    sudo apt update > /dev/null 2>&1 
+    sudo apt install -y vim curl wget apt-transport-https ca-certificates curl gpg gnupg lsb-release git 
 }
