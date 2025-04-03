@@ -67,7 +67,8 @@ function startCluster {
     kubeadm init --pod-network-cidr=172.16.0.0/16 --apiserver-advertise-address=192.168.3.201
 
     echo -e "Configuracoes do kubeadm enviadas para o usuario vagrant\n"
-    mkdir -p /home/vagrant/.kube 
+    mkdir -p /home/vagrant/.kube
+    mkdir -p /vagrant/token
     sudo cp /etc/kubernetes/admin.conf /home/vagrant/.kube/config
     sudo cp /etc/kubernetes/admin.conf /vagrant/token/kube_config
     sudo chown vagrant:vagrant /home/vagrant/.kube/config
@@ -89,4 +90,5 @@ function installCNICilium {
 
     su -c "helm repo add cilium https://helm.cilium.io/" -s /bin/bash vagrant 
     su -c "helm install cilium cilium/cilium --version 1.17.2 --namespace kube-system" -s /bin/bash vagrant
+
 }
