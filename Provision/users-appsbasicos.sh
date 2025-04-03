@@ -14,6 +14,12 @@ cat <<-EOF | sudo tee -a /etc/hosts
 192.168.3.201 k8s-control-plane
 EOF
 
+# Adiciona o DNS do Google no arquivo resolv.conf
+cat <<-EOF | sudo tee -a /etc/resolv.conf
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+EOF
+
 
     # Alterar a senha do usuário "root" 
     sudo usermod -p $(openssl passwd -1 ${PASS}) root 
