@@ -64,7 +64,7 @@ function installContainerd {
 function startCluster {
 
     echo -e "Executando o comando 'kubeadm init'"
-    kubeadm init --pod-network-cidr=172.16.0.0/16 --apiserver-advertise-address=192.168.3.201
+    kubeadm init --pod-network-cidr=172.16.0.0/16 --apiserver-advertise-address=192.168.3.201      
 
     echo -e "Configuracoes do kubeadm enviadas para o usuario vagrant\n"
     mkdir -p /home/vagrant/.kube
@@ -79,6 +79,11 @@ function startCluster {
 }
 
 function addWorker {
+    IP_ADDRESS=$(ip -j address show eth1 | jq -r '.[].addr_info[0].local')
+    sudo sed -i "s/KUBELET_EXTRA_ARGS=/KUBELET_EXTRA_ARGS=\'--node-ip $IP_ADDRESS\'/g" /etc/default/kubelet
+    sudo systemctl daemon-reload
+    sudo systemctl restart kubelet
+    
     kubeadmtoken=$(cat /vagrant/token/kubeadm_node_token)
     sudo $kubeadmtoken
 }

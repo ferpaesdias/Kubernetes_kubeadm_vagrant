@@ -29,5 +29,5 @@ EOF
 function installApp {
 
     sudo apt update > /dev/null 2>&1 
-    sudo apt install -y vim curl wget apt-transport-https ca-certificates curl gpg gnupg lsb-release git 
+    sudo apt install -y vim curl wget apt-transport-https ca-certificates curl gpg gnupg lsb-release git jq
 }
